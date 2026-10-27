@@ -1,0 +1,12 @@
+# Build artifacts
+build/
+.version
+
+# IDE / tool caches
+.idea/
+*.iml
+.vscode/
+.gradle/
+
+# Legacy / not part of XRail
+/1/

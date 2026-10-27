@@ -1,0 +1,26 @@
+name: XRail
+main: com.ximangge.xrail.XRail
+version: 26.10.27.1
+api-version: '1.20'
+author: XiMangGe
+description: Fine-grained minecart speed control with GUI, per-type limits and live speed display.
+website: https://github.com/XiMangGe/XRail
+
+commands:
+  xrail:
+    description: XRail main command
+    usage: /xrail help
+    aliases: [xr]
+    permission: xrail.use
+    permission-message: "You do not have permission to use this command."
+
+permissions:
+  xrail.use:
+    description: Basic command access
+    default: true
+  xrail.admin:
+    description: Admin commands (set speeds / language / reload / GUI)
+    default: op
+  xrail.display:
+    description: Use the live speed display
+    default: true

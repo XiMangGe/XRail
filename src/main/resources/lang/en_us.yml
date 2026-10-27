@@ -1,0 +1,73 @@
+# XRail English language file
+prefix: "&8[&bXRail&8] &r"
+
+# ---- Generic ----
+no-permission: "&cYou do not have permission to do that."
+player-only: "&cThis command can only be used by players."
+player-not-found: "&cPlayer &f%player% &cis not online."
+unknown-sub: "&cUnknown subcommand. Type &f/xrail help &cfor help."
+
+# ---- Help ----
+help-header: "&b===== XRail Minecart Speed ====="
+help:
+  - "&f/xrail status &7- View speed limits of all cart types"
+  - "&f/xrail set <type> <speed> &7- Set speed limit of a cart type &8(admin)"
+  - "&f/xrail vanilla <type> &7- Restore vanilla speed for a cart type &8(admin)"
+  - "&f/xrail display [method] [player] &7- Speed display: actionbar/bossbar/chat/off"
+  - "&f/xrail language <lang> &7- Switch plugin language &8(admin)"
+  - "&f/xrail reload &7- Reload and re-apply config &8(admin)"
+  - "&7Tip: Sneak + Left-click + Right-click a minecart to open the speed GUI (admin)"
+usage-set: "&cUsage: /xrail set <cart type> <speed>, e.g. &f/xrail set hopper_minecart 40"
+usage-vanilla: "&cUsage: /xrail vanilla <cart type>"
+usage-language: "&cUsage: /xrail language <code>, e.g. &fzh_cn / en_us"
+
+# ---- Cart type names ----
+type:
+  minecraft: "&fMinecart"
+  chest_minecart: "&fChest Minecart"
+  furnace_minecart: "&fFurnace Minecart"
+  hopper_minecart: "&fHopper Minecart"
+  tnt_minecart: "&fTNT Minecart"
+  spawner_minecart: "&fSpawner Minecart"
+  command_minecart: "&fCommand Block Minecart"
+
+# ---- Command feedback ----
+set-done: "&aSet speed limit of &f%type% &ato &f%speed% blocks/s&a."
+vanilla-done: "&aRestored &f%type% &ato vanilla speed."
+invalid-type: "&cUnknown cart type: &f%type%&c. Available: minecraft / chest / furnace / hopper / tnt / spawner"
+invalid-number: "&cInvalid speed: &f%input%&c. Must be an integer between &f1 and %max%&c."
+speed-clamped: "&eSpeed out of range, adjusted to &f%value% blocks/s&e."
+status-header: "&b===== XRail Cart Speed Status ====="
+status-line: " &f- %type% &8: %state%"
+status-custom: "&aCustom &f%speed% blocks/s"
+status-vanilla: "&7Vanilla"
+status-locked: "&7Vanilla&8 (command carts cannot be modified)"
+language-set: "&aPlugin language switched to &f%lang%&a."
+language-unknown: "&cLanguage file &flang/%code%.yml &cdoes not exist."
+reload-done: "&aConfig and language reloaded, speed limits re-applied."
+
+# ---- Speed display ----
+display-current: "&aCurrent speed display method: &f%method%"
+display-set: "&aSet speed display of &f%player% &ato &f%method%&a."
+display-unknown-method: "&cUnknown display method: &f%method%&c. Available: actionbar / bossbar / chat / off"
+display-disabled: "&cThe speed display is disabled in the server config."
+display:
+  format: "&bSpeed &f%speed% &bblocks/s"
+
+# ---- GUI ----
+gui:
+  title: "&8Cart Speed &7| &f%type%"
+  opened: "&aOpened the speed settings of &f%type%&a."
+  armed: "&eRight-click the minecart again to open the speed GUI"
+  command-cart: "&cCommand block minecarts cannot be modified."
+  max: "&eReached the maximum limit of &f%max% blocks/s&e."
+  min: "&eReached the minimum speed of &f1 block/s&e."
+  prev: "&fPrevious page: Redstone (+/-1 blocks/s)"
+  next: "&fNext page: Diamonds (+/-5 blocks/s)"
+  close: "&cClose"
+  info-name: "&b%type% · Speed Settings"
+  info-limit: "&fCurrent limit: &b%speed% blocks/s"
+  info-max: "&fMaximum limit: &7%max% blocks/s"
+  info-help: "&7Page 1 diamonds ±5 &8| &7Page 2 redstone ±1 &8| &7Right = add, Left = remove"
+  item-name: "&b%count% pcs &7(each ±%step% blocks/s)"
+  item-lore: "&7Right-click + &f%step%&7 blocks/s &8| &7Left-click - &f%step%&7 blocks/s"

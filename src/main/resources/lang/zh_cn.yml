@@ -1,0 +1,73 @@
+# XRail 中文语言文件
+prefix: "&8[&bXRail&8] &r"
+
+# ---- 通用 ----
+no-permission: "&c你没有权限执行此操作。"
+player-only: "&c该命令只能由玩家执行。"
+player-not-found: "&c玩家 &f%player% &c不在线。"
+unknown-sub: "&c未知子命令，输入 &f/xrail help &c查看帮助。"
+
+# ---- 帮助 ----
+help-header: "&b===== XRail 矿车速度 ====="
+help:
+  - "&f/xrail status &7- 查看各类矿车速度上限"
+  - "&f/xrail set <类型> <速度> &7- 设置某类矿车速度上限 &8(管理员)"
+  - "&f/xrail vanilla <类型> &7- 某类矿车恢复原版速度 &8(管理员)"
+  - "&f/xrail display [方式] [玩家] &7- 速度显示：actionbar/bossbar/chat/off"
+  - "&f/xrail language <语言> &7- 切换插件语言 &8(管理员)"
+  - "&f/xrail reload &7- 重载配置并重新应用 &8(管理员)"
+  - "&7提示：潜行 + 左键 + 右键矿车可打开速度设置界面（管理员）"
+usage-set: "&c用法：/xrail set <矿车类型> <速度>，例如 &f/xrail set hopper_minecart 40"
+usage-vanilla: "&c用法：/xrail vanilla <矿车类型>"
+usage-language: "&c用法：/xrail language <语言代码>，例如 &fzh_cn / en_us"
+
+# ---- 矿车类型名称 ----
+type:
+  minecraft: "&f普通矿车"
+  chest_minecart: "&f箱子矿车"
+  furnace_minecart: "&f动力矿车"
+  hopper_minecart: "&f漏斗矿车"
+  tnt_minecart: "&fTNT 矿车"
+  spawner_minecart: "&f刷怪笼矿车"
+  command_minecart: "&f命令方块矿车"
+
+# ---- 命令反馈 ----
+set-done: "&a已将 &f%type% &a的速度上限设为 &f%speed% 格/秒&a。"
+vanilla-done: "&a已将 &f%type% &a恢复为原版速度。"
+invalid-type: "&c未知矿车类型：&f%type%&c。可用：minecraft / chest / furnace / hopper / tnt / spawner"
+invalid-number: "&c无效速度：&f%input%&c，需要 &f1 ~ %max% &c之间的整数。"
+speed-clamped: "&e速度超出范围，已自动调整为 &f%value% 格/秒&e。"
+status-header: "&b===== XRail 矿车速度状态 ====="
+status-line: " &f- %type% &8: %state%"
+status-custom: "&a自定义 &f%speed% 格/秒"
+status-vanilla: "&7原版"
+status-locked: "&7原版&8（命令矿车不可修改）"
+language-set: "&a插件语言已切换为 &f%lang%&a。"
+language-unknown: "&c语言文件 &flang/%code%.yml &c不存在。"
+reload-done: "&a配置与语言已重载，速度限制已重新应用。"
+
+# ---- 速度显示 ----
+display-current: "&a当前速度显示方式：&f%method%"
+display-set: "&a已将 &f%player% &a的速度显示设为 &f%method%&a。"
+display-unknown-method: "&c未知显示方式：&f%method%&c。可用：actionbar / bossbar / chat / off"
+display-disabled: "&c速度显示功能已在服务器配置中关闭。"
+display:
+  format: "&b速度 &f%speed% &b格/秒"
+
+# ---- GUI ----
+gui:
+  title: "&8矿车速度设置 &7| &f%type%"
+  opened: "&a已打开 &f%type% &a的速度设置界面。"
+  armed: "&e再次右键矿车即可打开速度设置"
+  command-cart: "&c命令方块矿车不支持速度修改。"
+  max: "&e已达最高上限 &f%max% 格/秒&e。"
+  min: "&e已达最低速度 &f1 格/秒&e。"
+  prev: "&f上一页：红石粉（±1 格/秒）"
+  next: "&f下一页：钻石（±5 格/秒）"
+  close: "&c关闭"
+  info-name: "&b%type% · 速度设置"
+  info-limit: "&f当前上限：&b%speed% 格/秒"
+  info-max: "&f最高上限：&7%max% 格/秒"
+  info-help: "&7第 1 页钻石 ±5 &8| &7第 2 页红石 ±1 &8| &7右键加、左键减"
+  item-name: "&b%count% 个 &7(每个 ±%step% 格/秒)"
+  item-lore: "&7右键 + &f%step%&7 格/秒 &8| &7左键 - &f%step%&7 格/秒"

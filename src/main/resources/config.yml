@@ -1,0 +1,48 @@
+# ============================================================
+#  XRail - Minecraft Paper/Purpur 矿车速度控制插件
+# ============================================================
+
+# 插件语言（对应 lang 文件夹中的文件名，例如 zh_cn / en_us）
+language: zh_cn
+
+# 速度上限（单位：格/秒）
+limit:
+  # 全局最高上限，GUI 与命令都无法超过该值
+  max: 75
+  # 未单独配置过的矿车类型的默认上限
+  default: 25
+
+# 速度显示栏（乘坐矿车时实时显示速度，保留 3 位小数）
+display:
+  # 是否允许使用速度显示栏（false 时所有玩家都无法开启）
+  enabled: true
+  # 默认显示方式: ACTIONBAR / BOSSBAR / CHAT / OFF
+  default-method: ACTIONBAR
+  # 显示刷新间隔（tick，20 tick = 1 秒）
+  update-interval: 2
+  # CHAT 模式的发送间隔（tick）
+  chat-interval: 20
+
+# 各类矿车的速度设置
+# enabled = true  时按 limit 限制速度上限（1 ~ limit.max）
+# enabled = false 时该类型矿车保持原版行为
+# 注意：命令方块矿车（COMMAND_MINECART）始终为原版，不受本插件影响
+carts:
+  MINECART:
+    enabled: true
+    limit: 25
+  CHEST_MINECART:
+    enabled: true
+    limit: 25
+  FURNACE_MINECART:
+    enabled: true
+    limit: 25
+  HOPPER_MINECART:
+    enabled: true
+    limit: 25
+  TNT_MINECART:
+    enabled: true
+    limit: 25
+  SPAWNER_MINECART:
+    enabled: true
+    limit: 25
