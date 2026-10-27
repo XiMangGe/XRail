@@ -1,6 +1,6 @@
 name: XRail
 main: com.ximangge.xrail.XRail
-version: 26.10.27.2
+version: 26.10.27.3
 api-version: '1.20'
 author: XiMangGe
 description: Fine-grained minecart speed control with GUI, per-type limits and live speed display.

@@ -1,8 +1,17 @@
 # XRail
 
-Minecraft Paper / Purpur 1.20+ 矿车速度控制插件。
+[![Release](https://img.shields.io/github/v/release/XiMangGe/XRail)](https://github.com/XiMangGe/XRail/releases/latest)
+![Java](https://img.shields.io/badge/Java-17%2B-blue)
+![Server](https://img.shields.io/badge/Paper%2FPurpur-1.20%20~%2026.3-green)
+![License](https://img.shields.io/github/license/XiMangGe/XRail)
 
-按矿车类型精细化控制速度上限（最高 75 格/秒），支持箱子界面设置、实时速度显示与多语言。
+Minecraft Paper / Purpur 矿车速度控制插件（1.20 ~ 26.3 通用）。
+
+按矿车类型精细化控制速度上限（普通矿车最高 75 格/秒），支持箱子界面设置、实时速度显示与多语言。
+
+## 下载
+
+从 [Releases](https://github.com/XiMangGe/XRail/releases/latest) 页面下载 `XRail-*.jar`，放入服务器 `plugins/` 目录后重启即可。
 
 ## 功能
 

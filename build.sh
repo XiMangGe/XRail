@@ -4,33 +4,41 @@
 #  Version rule: yy.MM.dd.<daily index>, auto-increment per build.
 #  The version is synced into build.sh (VERSION=) and
 #  plugin.yml (version:) automatically.
+#  Set XRAIL_VERSION to force a specific version (used by CI
+#  when building from a vX.Y.Z.W tag).
 # ============================================================
 set -e
 
 PLUGIN_NAME=XRail
-VERSION=26.10.27.2
+VERSION=26.10.27.3
 
 # ---- compute version ----
-VERSION_DATE=$(date +%y.%m.%d)
-VERSION_FILE=.version
-BUILD_NUM=0
-if [ -f "$VERSION_FILE" ]; then
-    read -r CDATE CNUM < "$VERSION_FILE" 2>/dev/null || true
-    if [ "${CDATE:-}" = "$VERSION_DATE" ]; then
-        BUILD_NUM="${CNUM:-0}"
+if [ -n "${XRAIL_VERSION:-}" ]; then
+    VERSION="$XRAIL_VERSION"
+else
+    VERSION_DATE=$(date +%y.%m.%d)
+    VERSION_FILE=.version
+    BUILD_NUM=0
+    if [ -f "$VERSION_FILE" ]; then
+        read -r CDATE CNUM < "$VERSION_FILE" 2>/dev/null || true
+        if [ "${CDATE:-}" = "$VERSION_DATE" ]; then
+            BUILD_NUM="${CNUM:-0}"
+        fi
     fi
+    BUILD_NUM=$((BUILD_NUM + 1))
+    echo "$VERSION_DATE $BUILD_NUM" > "$VERSION_FILE"
+    VERSION="$VERSION_DATE.$BUILD_NUM"
 fi
-BUILD_NUM=$((BUILD_NUM + 1))
-echo "$VERSION_DATE $BUILD_NUM" > "$VERSION_FILE"
-VERSION=26.10.27.2
 
 # ---- sync version into plugin.yml and this script ----
+# ????????????^VERSION=[0-9.] ? ^version: [0-9.]??
+# ??????????? VERSION="$VERSION_DATE.$BUILD_NUM"
 if sed --version >/dev/null 2>&1; then
-    sed -i "s/^version: .*/version: $VERSION/" src/main/resources/plugin.yml
-    sed -i "s/^VERSION=.*/VERSION=$VERSION/" build.sh
+    sed -i "s/^version: [0-9][0-9.]*$/version: $VERSION/" src/main/resources/plugin.yml
+    sed -i "s/^VERSION=[0-9][0-9.]*$/VERSION=$VERSION/" build.sh
 else
-    sed -i '' "s/^version: .*/version: $VERSION/" src/main/resources/plugin.yml
-    sed -i '' "s/^VERSION=.*/VERSION=$VERSION/" build.sh
+    sed -i '' "s/^version: [0-9][0-9.]*$/version: $VERSION/" src/main/resources/plugin.yml
+    sed -i '' "s/^VERSION=[0-9][0-9.]*$/VERSION=$VERSION/" build.sh
 fi
 
 echo "========================================"

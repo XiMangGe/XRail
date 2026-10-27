@@ -29,8 +29,9 @@ echo  XRail Builder v%VERSION%
 echo ========================================
 
 :: ---- sync version into build.sh and plugin.yml ----
-powershell -NoProfile -Command "$c = Get-Content 'build.sh' -Raw; $c = [regex]::Replace($c, '(?m)^VERSION=.*$', 'VERSION=%VERSION%'); Set-Content 'build.sh' -Value $c -Encoding Ascii -NoNewline"
-powershell -NoProfile -Command "$c = Get-Content 'src/main/resources/plugin.yml' -Raw; $c = [regex]::Replace($c, '(?m)^version: .*$', 'version: %VERSION%'); Set-Content 'src/main/resources/plugin.yml' -Value $c -Encoding Ascii -NoNewline"
+:: 正则只匹配“数字字面量”行，避免误伤 build.sh 里的计算赋值 VERSION="$..."
+powershell -NoProfile -Command "$c = Get-Content 'build.sh' -Raw; $c = [regex]::Replace($c, '(?m)^VERSION=[0-9][0-9.]*$', 'VERSION=%VERSION%'); Set-Content 'build.sh' -Value $c -Encoding Ascii -NoNewline"
+powershell -NoProfile -Command "$c = Get-Content 'src/main/resources/plugin.yml' -Raw; $c = [regex]::Replace($c, '(?m)^version: [0-9][0-9.]*$', 'version: %VERSION%'); Set-Content 'src/main/resources/plugin.yml' -Value $c -Encoding Ascii -NoNewline"
 
 :: ---- toolchain ----
 set "JDK_BIN=C:\Program Files\Java\latest\jdk-26\bin"
