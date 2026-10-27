@@ -8,7 +8,7 @@
 set -e
 
 PLUGIN_NAME=XRail
-VERSION=26.10.27.1
+VERSION=26.10.27.2
 
 # ---- compute version ----
 VERSION_DATE=$(date +%y.%m.%d)
@@ -22,7 +22,7 @@ if [ -f "$VERSION_FILE" ]; then
 fi
 BUILD_NUM=$((BUILD_NUM + 1))
 echo "$VERSION_DATE $BUILD_NUM" > "$VERSION_FILE"
-VERSION=26.10.27.1
+VERSION=26.10.27.2
 
 # ---- sync version into plugin.yml and this script ----
 if sed --version >/dev/null 2>&1; then

@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 潜行 + 左键 + 右键（按顺序）打开速度设置界面。
+ * 潜行 + 左键 + 右键（按顺序）打开单台矿车的速度设置界面，所有玩家可用。
  * 第 1 步：潜行状态下左键（攻击）矿车 → 记录“待设置”状态（并取消伤害，防止打坏矿车）；
  * 第 2 步：4 秒内保持潜行并右键同一台矿车 → 打开 GUI。
  */
@@ -51,7 +51,7 @@ public class InteractListener implements Listener {
         if (!(event.getDamager() instanceof Player)) return;
         Player player = (Player) event.getDamager();
         if (!(event.getEntity() instanceof Minecart)) return;
-        if (!player.isSneaking() || !player.hasPermission("xrail.admin")) return;
+        if (!player.isSneaking() || !player.hasPermission("xrail.use")) return;
 
         event.setCancelled(true); // 组合键期间不损坏矿车
         armed.put(player.getUniqueId(),
@@ -85,7 +85,7 @@ public class InteractListener implements Listener {
 
         Armed arm = armed.remove(player.getUniqueId());
         if (arm == null) return false;
-        if (!player.isSneaking() || !player.hasPermission("xrail.admin")) return false;
+        if (!player.isSneaking() || !player.hasPermission("xrail.use")) return false;
         if (!arm.cartId.equals(clicked.getUniqueId())) return false;
         if (System.currentTimeMillis() - arm.time > ARM_TIMEOUT_MS) return false;
 
@@ -94,8 +94,12 @@ public class InteractListener implements Listener {
             plugin.getLanguageManager().send(player, "gui.command-cart");
             return true;
         }
+        if (!plugin.getConfigManager().getSetting(type).enabled) {
+            plugin.getLanguageManager().send(player, "gui.type-vanilla");
+            return true;
+        }
 
-        new SpeedGUI(plugin, type).open(player);
+        new SpeedGUI(plugin, (Minecart) clicked).open(player);
         plugin.getLanguageManager().send(player, "gui.opened",
                 "%type%", plugin.getLanguageManager().format(type.langKey()));
         return true;

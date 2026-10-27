@@ -1,7 +1,6 @@
 package com.ximangge.xrail.display;
 
 import com.ximangge.xrail.XRail;
-import com.ximangge.xrail.config.CartType;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -172,15 +171,9 @@ public class DisplayManager {
         }
     }
 
-    /** Boss 条进度 = 速度 / 该矿车的上限 */
+    /** Boss 条进度 = 速度 / 该矿车的生效上限 */
     private double progressOf(double speed, Minecart cart) {
-        double max;
-        CartType type = CartType.fromEntity(cart);
-        if (type == null || type.isCommandCart()) {
-            max = 8.0D;
-        } else {
-            max = plugin.getConfigManager().getSetting(type).limit;
-        }
+        double max = plugin.getSpeedManager().effectiveLimit(cart);
         if (max <= 0) max = 1;
         return Math.max(0.0D, Math.min(1.0D, speed / max));
     }

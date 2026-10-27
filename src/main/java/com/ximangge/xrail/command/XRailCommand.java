@@ -109,15 +109,15 @@ public class XRailCommand implements CommandExecutor, TabCompleter {
             lang.send(sender, "invalid-type", "%type%", args[1]);
             return;
         }
-        int max = plugin.getConfigManager().getMaxLimit();
+        int cap = plugin.getConfigManager().getTypeCap(type);
         int num;
         try {
             num = Integer.parseInt(args[2]);
         } catch (NumberFormatException ex) {
-            lang.send(sender, "invalid-number", "%input%", args[2], "%max%", String.valueOf(max));
+            lang.send(sender, "invalid-number", "%input%", args[2], "%max%", String.valueOf(cap));
             return;
         }
-        int clamped = plugin.getConfigManager().clamp(num);
+        int clamped = plugin.getConfigManager().clamp(type, num);
         if (clamped != num) {
             lang.send(sender, "speed-clamped", "%value%", String.valueOf(clamped));
         }

@@ -7,8 +7,10 @@ language: zh_cn
 
 # 速度上限（单位：格/秒）
 limit:
-  # 全局最高上限，GUI 与命令都无法超过该值
-  max: 75
+  # 普通矿车（MINECART）的最高上限，GUI 与命令都无法超过该值
+  max-cart: 75
+  # 其他类型矿车的最高上限
+  max-other: 25
   # 未单独配置过的矿车类型的默认上限
   default: 25
 
@@ -24,8 +26,9 @@ display:
   chat-interval: 20
 
 # 各类矿车的速度设置
-# enabled = true  时按 limit 限制速度上限（1 ~ limit.max）
+# enabled = true  时按 limit 限制速度上限（1 ~ 对应上限：普通矿车 75，其他 25）
 # enabled = false 时该类型矿车保持原版行为
+# 玩家可通过 GUI 对单台矿车设置自定义上限（不超过对应类型上限，随矿车存档保存）
 # 注意：命令方块矿车（COMMAND_MINECART）始终为原版，不受本插件影响
 carts:
   MINECART:

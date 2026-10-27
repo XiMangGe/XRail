@@ -2,10 +2,10 @@ package com.ximangge.xrail.gui;
 
 import com.ximangge.xrail.XRail;
 import com.ximangge.xrail.config.CartType;
-import com.ximangge.xrail.config.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
@@ -17,11 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 矿车速度设置界面（54 格箱子界面）。
+ * 单台矿车的速度设置界面（54 格箱子界面），所有玩家可用。
  * - 第 1 页：钻石，每个 ±5 格/秒（数量 = 当前上限 ÷ 5）
  * - 第 2 页：红石粉，每个 ±1 格/秒（数量 = 当前上限 ÷ 5 的余数）
  * - 右键加、左键减；箭头翻页，屏障关闭
- * 修改即时写回 config.yml，并对已加载的同类型矿车生效。
+ * 修改只作用于这一台矿车（存入其持久化数据，随存档保存），
+ * 且不能超过该类型的最高上限：普通矿车 75，其他类型 25。
  */
 public class SpeedGUI implements InventoryHolder {
 
@@ -33,13 +34,15 @@ public class SpeedGUI implements InventoryHolder {
     private static final int SLOT_NEXT = 53;
 
     private final XRail plugin;
+    private final Minecart cart;
     private final CartType type;
     private final Inventory inventory;
     private int page = 0;
 
-    public SpeedGUI(XRail plugin, CartType type) {
+    public SpeedGUI(XRail plugin, Minecart cart) {
         this.plugin = plugin;
-        this.type = type;
+        this.cart = cart;
+        this.type = CartType.fromEntity(cart);
         String title = plugin.getLanguageManager().format("gui.title", "%type%", typeDisplay());
         this.inventory = Bukkit.createInventory(this, SIZE, title);
         refresh();
@@ -62,8 +65,14 @@ public class SpeedGUI implements InventoryHolder {
         return plugin.getLanguageManager().format(type.langKey());
     }
 
+    /** 这台矿车当前的生效上限 */
     private int currentLimit() {
-        return plugin.getConfigManager().getSetting(type).limit;
+        return plugin.getSpeedManager().effectiveLimit(cart);
+    }
+
+    /** 这台矿车所属类型允许的最高上限 */
+    private int cap() {
+        return plugin.getConfigManager().getTypeCap(type);
     }
 
     public void setPage(int page) {
@@ -96,8 +105,7 @@ public class SpeedGUI implements InventoryHolder {
 
         List<String> infoLore = new ArrayList<>();
         infoLore.add(plugin.getLanguageManager().format("gui.info-limit", "%speed%", String.valueOf(limit)));
-        infoLore.add(plugin.getLanguageManager().format("gui.info-max",
-                "%max%", String.valueOf(plugin.getConfigManager().getMaxLimit())));
+        infoLore.add(plugin.getLanguageManager().format("gui.info-max", "%max%", String.valueOf(cap())));
         infoLore.add(plugin.getLanguageManager().format("gui.info-help"));
         inventory.setItem(SLOT_INFO, named(Material.BOOK,
                 plugin.getLanguageManager().format("gui.info-name", "%type%", typeDisplay()), infoLore));
@@ -133,9 +141,8 @@ public class SpeedGUI implements InventoryHolder {
     }
 
     private void adjust(Player player, int delta) {
-        ConfigManager cfg = plugin.getConfigManager();
         int oldLimit = currentLimit();
-        int max = cfg.getMaxLimit();
+        int max = cap();
         int newLimit = oldLimit + delta;
 
         if (newLimit > max) {
@@ -147,8 +154,8 @@ public class SpeedGUI implements InventoryHolder {
         }
         if (newLimit == oldLimit) return;
 
-        cfg.setLimit(type, newLimit);
-        plugin.getSpeedManager().applyType(type);
+        plugin.getSpeedManager().setOverride(cart, newLimit);
+        plugin.getSpeedManager().apply(cart);
         refresh();
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.6f, 1.4f);
     }
