@@ -1,12 +1,25 @@
-# Build artifacts
+# 编译产物
 build/
+dist/
+*.class
+
+# 版本计数器
 .version
 
-# IDE / tool caches
+# 本地专用文件（不入库）
+build.bat
+.github/
+
+# 旧版本备份与本地缓存
+/1/
+.gradle/
+
+# IDE
 .idea/
 *.iml
 .vscode/
-.gradle/
+*.swp
 
-# Legacy / not part of XRail
-/1/
+# 系统文件
+.DS_Store
+Thumbs.db
