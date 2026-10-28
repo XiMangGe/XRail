@@ -10,7 +10,7 @@
 set -e
 
 PLUGIN_NAME=XRail
-VERSION=26.10.27.3
+VERSION=26.10.28.1
 
 # ---- compute version ----
 if [ -n "${XRAIL_VERSION:-}" ]; then
@@ -31,8 +31,10 @@ else
 fi
 
 # ---- sync version into plugin.yml and this script ----
-# ????????????^VERSION=[0-9.] ? ^version: [0-9.]??
-# ??????????? VERSION="$VERSION_DATE.$BUILD_NUM"
+# Only numeric literal lines (^VERSION=[0-9.] and ^version: [0-9.])
+# are replaced, so the computed assignment VERSION="$VERSION_DATE.$BUILD_NUM"
+# above is never touched. Keep comments ASCII-only: build.bat rewrites
+# this file with -Encoding Ascii.
 if sed --version >/dev/null 2>&1; then
     sed -i "s/^version: [0-9][0-9.]*$/version: $VERSION/" src/main/resources/plugin.yml
     sed -i "s/^VERSION=[0-9][0-9.]*$/VERSION=$VERSION/" build.sh

@@ -1,6 +1,7 @@
 # XRail
 
 [![Release](https://img.shields.io/github/v/release/XiMangGe/XRail)](https://github.com/XiMangGe/XRail/releases/latest)
+[![Build](https://github.com/XiMangGe/XRail/actions/workflows/build.yml/badge.svg)](https://github.com/XiMangGe/XRail/actions/workflows/build.yml)
 ![Java](https://img.shields.io/badge/Java-17%2B-blue)
 ![Server](https://img.shields.io/badge/Paper%2FPurpur-1.20%20~%2026.3-green)
 ![License](https://img.shields.io/github/license/XiMangGe/XRail)
