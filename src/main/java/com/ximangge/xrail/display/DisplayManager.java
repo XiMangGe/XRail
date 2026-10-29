@@ -8,6 +8,9 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
@@ -25,7 +28,7 @@ import java.util.UUID;
  * - OFF      ：关闭
  * 速度统一保留 3 位小数（格/秒）。
  */
-public class DisplayManager {
+public class DisplayManager implements Listener {
 
     public enum Method {
         ACTIONBAR, BOSSBAR, CHAT, OFF;
@@ -151,8 +154,15 @@ public class DisplayManager {
                         bar.addPlayer(player);
                         bossBars.put(player.getUniqueId(), bar);
                     }
-                    bar.setTitle(plugin.getLanguageManager().format("display.format", "%speed%", formatted));
-                    bar.setProgress(progressOf(speed, cart));
+                    // 值未变化时不重复发包
+                    String title = plugin.getLanguageManager().format("display.format", "%speed%", formatted);
+                    if (!bar.getTitle().equals(title)) {
+                        bar.setTitle(title);
+                    }
+                    double progress = progressOf(speed, cart);
+                    if (Math.abs(bar.getProgress() - progress) > 0.001D) {
+                        bar.setProgress(progress);
+                    }
                     break;
                 }
 
@@ -183,6 +193,13 @@ public class DisplayManager {
         if (bar != null) {
             bar.removeAll();
         }
+    }
+
+    /** 玩家退出：清理 BossBar 与聊天节流记录（显示方式本身持久化保留） */
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        removeBossBar(event.getPlayer());
+        lastChat.remove(event.getPlayer().getUniqueId());
     }
 
     /** 插件关闭时清理：停任务、移除所有 Boss 条、保存数据 */

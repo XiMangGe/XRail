@@ -45,6 +45,7 @@ public final class XRail extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CartListener(this), this);
         Bukkit.getPluginManager().registerEvents(new InteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GuiListener(this), this);
+        Bukkit.getPluginManager().registerEvents(displayManager, this);
 
         XRailCommand command = new XRailCommand(this);
         getCommand("xrail").setExecutor(command);

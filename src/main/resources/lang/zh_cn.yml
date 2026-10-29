@@ -60,6 +60,7 @@ gui:
   title: "&8矿车速度设置 &7| &f%type%"
   opened: "&a已打开 &f%type% &a的速度设置界面。"
   armed: "&e再次右键矿车即可打开速度设置"
+  expired: "&e组合键已超时，请重新潜行左键矿车"
   command-cart: "&c命令方块矿车不支持速度修改。"
   type-vanilla: "&c该矿车类型已被服务器设为原版速度，无法修改。"
   max: "&e已达最高上限 &f%max% 格/秒&e。"
@@ -72,4 +73,5 @@ gui:
   info-max: "&f最高上限：&7%max% 格/秒"
   info-help: "&7第 1 页钻石 ±5 &8| &7第 2 页红石 ±1 &8| &7右键加、左键减"
   item-name: "&b%count% 个 &7(每个 ±%step% 格/秒)"
+  item-empty: "&7本页数量为 0 &7(右键 +&f%step%&7 可添加)"
   item-lore: "&7右键 + &f%step%&7 格/秒 &8| &7左键 - &f%step%&7 格/秒"

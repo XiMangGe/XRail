@@ -95,12 +95,22 @@ public class SpeedGUI implements InventoryHolder {
 
         List<String> itemLore = new ArrayList<>();
         itemLore.add(plugin.getLanguageManager().format("gui.item-lore", "%step%", String.valueOf(step)));
-        ItemStack item = named(material,
-                plugin.getLanguageManager().format("gui.item-name",
-                        "%step%", String.valueOf(step),
-                        "%count%", String.valueOf(count)),
-                itemLore);
-        item.setAmount(Math.max(1, Math.min(64, count)));
+        ItemStack item;
+        if (count == 0) {
+            // 本页数量为 0：灰染料空态，如实显示 0（右键仍可添加）
+            item = named(Material.GRAY_DYE,
+                    plugin.getLanguageManager().format("gui.item-empty",
+                            "%step%", String.valueOf(step)),
+                    itemLore);
+            item.setAmount(1);
+        } else {
+            item = named(material,
+                    plugin.getLanguageManager().format("gui.item-name",
+                            "%step%", String.valueOf(step),
+                            "%count%", String.valueOf(count)),
+                    itemLore);
+            item.setAmount(Math.min(64, count));
+        }
         inventory.setItem(SLOT_ITEM, item);
 
         List<String> infoLore = new ArrayList<>();
@@ -122,6 +132,8 @@ public class SpeedGUI implements InventoryHolder {
     public void handleClick(Player player, int slot, ClickType click) {
         switch (slot) {
             case SLOT_ITEM: {
+                // 只响应左键（减）与右键（加），中键/数字键不调整
+                if (!click.isLeftClick() && !click.isRightClick()) break;
                 int step = page == 0 ? 5 : 1;
                 adjust(player, click.isRightClick() ? step : -step);
                 break;
@@ -141,6 +153,12 @@ public class SpeedGUI implements InventoryHolder {
     }
 
     private void adjust(Player player, int delta) {
+        if (!plugin.getConfigManager().getSetting(type).enabled) {
+            // GUI 打开期间类型被切回原版：拒绝调整，保持状态一致
+            plugin.getLanguageManager().send(player, "gui.type-vanilla");
+            player.closeInventory();
+            return;
+        }
         int oldLimit = currentLimit();
         int max = cap();
         int newLimit = oldLimit + delta;

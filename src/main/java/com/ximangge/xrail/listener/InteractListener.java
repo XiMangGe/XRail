@@ -83,11 +83,15 @@ public class InteractListener implements Listener {
         if (hand != EquipmentSlot.HAND) return false;
         if (!(clicked instanceof Minecart)) return false;
 
-        Armed arm = armed.remove(player.getUniqueId());
+        Armed arm = armed.get(player.getUniqueId());
         if (arm == null) return false;
+        if (!arm.cartId.equals(clicked.getUniqueId())) return false; // 点错矿车：不消费，仍可右键目标车
+        armed.remove(player.getUniqueId());
         if (!player.isSneaking() || !player.hasPermission("xrail.use")) return false;
-        if (!arm.cartId.equals(clicked.getUniqueId())) return false;
-        if (System.currentTimeMillis() - arm.time > ARM_TIMEOUT_MS) return false;
+        if (System.currentTimeMillis() - arm.time > ARM_TIMEOUT_MS) {
+            plugin.getLanguageManager().sendActionbar(player, "gui.expired");
+            return false;
+        }
 
         CartType type = CartType.fromEntity((Minecart) clicked);
         if (type == null || type.isCommandCart()) {
