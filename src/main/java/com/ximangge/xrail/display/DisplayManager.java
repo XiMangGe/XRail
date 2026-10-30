@@ -114,7 +114,9 @@ public class DisplayManager implements Listener {
 
     public void startTask() {
         stopTask();
-        long interval = plugin.getConfigManager().getUpdateInterval();
+        // 动作条在客户端约 3 秒后淡出，间隔过大（>2 秒）会断流闪烁，
+        // 因此刷新周期最多 40 tick（2 秒），配置写得再大也按 40 处理。
+        long interval = Math.max(1L, Math.min(plugin.getConfigManager().getUpdateInterval(), 40L));
         task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, interval, interval);
     }
 

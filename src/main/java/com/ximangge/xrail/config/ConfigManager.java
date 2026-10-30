@@ -75,15 +75,24 @@ public class ConfigManager {
         }
     }
 
-    /** 把矿车类型配置写回 config.yml */
+    /**
+     * 把矿车类型配置与语言写回 config.yml。
+     * 保存前先重读磁盘：只覆盖插件自己管理的键（language / carts.*），
+     * 避免运行期手动编辑过的 display、limit 等配置被内存快照覆盖丢失。
+     */
     public void save() {
         try {
+            YamlConfiguration disk = file.isFile()
+                    ? YamlConfiguration.loadConfiguration(file)
+                    : yaml; // 文件尚未生成时用内存配置作底稿
+            disk.set("language", language);
             for (Map.Entry<CartType, CartSetting> e : carts.entrySet()) {
                 String path = "carts." + e.getKey().getKey();
-                yaml.set(path + ".enabled", e.getValue().enabled);
-                yaml.set(path + ".limit", e.getValue().limit);
+                disk.set(path + ".enabled", e.getValue().enabled);
+                disk.set(path + ".limit", e.getValue().limit);
             }
-            yaml.save(file);
+            disk.save(file);
+            yaml = disk;
         } catch (Exception ex) {
             plugin.getLogger().warning("Failed to save config.yml: " + ex.getMessage());
         }

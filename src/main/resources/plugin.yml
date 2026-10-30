@@ -1,6 +1,6 @@
 name: XRail
 main: com.ximangge.xrail.XRail
-version: 26.10.30.1
+version: 26.10.30.2
 api-version: '1.20'
 author: XiMangGe
 description: Fine-grained minecart speed control with GUI, per-type limits and live speed display.
@@ -12,6 +12,11 @@ commands:
     usage: /xrail help
     aliases: [xr]
     permission: xrail.use
+  xrailreload:
+    description: Reload XRail config, language and display settings
+    usage: /xrailreload
+    aliases: [xrreload]
+    permission: xrail.admin
 
 permissions:
   xrail.use:

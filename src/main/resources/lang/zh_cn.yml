@@ -16,6 +16,7 @@ help:
   - "&f/xrail display [方式] [玩家] &7- 速度显示：actionbar/bossbar/chat/off"
   - "&f/xrail language <语言> &7- 切换插件语言 &8(管理员)"
   - "&f/xrail reload &7- 重载配置并重新应用 &8(管理员)"
+  - "&f/xrailreload &7- 重载命令的快捷形式 &8(管理员)"
   - "&7提示：潜行 + 左键 + 右键矿车可打开速度设置界面"
   - "&7上限规则：普通矿车最高 75 格/秒，其他类型最高 25 格/秒"
 usage-set: "&c用法：/xrail set <矿车类型> <速度>，例如 &f/xrail set hopper_minecart 40"

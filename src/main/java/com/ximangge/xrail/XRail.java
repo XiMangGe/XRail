@@ -52,6 +52,16 @@ public final class XRail extends JavaPlugin {
         XRailCommand command = new XRailCommand(this);
         getCommand("xrail").setExecutor(command);
         getCommand("xrail").setTabCompleter(command);
+        // 独立重载命令 /xrailreload（等价于 /xrail reload）
+        getCommand("xrailreload").setExecutor((sender, cmd, label, args) -> {
+            if (!sender.hasPermission("xrail.admin")) {
+                languageManager.send(sender, "no-permission");
+                return true;
+            }
+            reloadAll();
+            languageManager.send(sender, "reload-done");
+            return true;
+        });
 
         speedManager.applyAllLoaded();
         speedManager.startSweepTask();
@@ -77,11 +87,16 @@ public final class XRail extends JavaPlugin {
         getLogger().info("XRail disabled.");
     }
 
-    /** /xrail reload：重载配置、语言，并重新应用速度 */
+    /** /xrail reload（或 /xrailreload）：重载配置、语言、玩家数据显示设置，并重新应用速度 */
     public void reloadAll() {
         configManager.load();
         languageManager.ensureDefaults();
         languageManager.load(configManager.getLanguage());
+        // 重新读取 playerdata.yml：手动改动过的显示方式无需重启服务器即可生效
+        displayManager.load();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            displayManager.removeBossBar(player); // 显示方式可能已变，旧的 Boss 条需要重建
+        }
         speedManager.applyAllLoaded();
         displayManager.restartTask();
     }
