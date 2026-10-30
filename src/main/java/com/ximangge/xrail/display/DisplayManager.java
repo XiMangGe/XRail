@@ -105,6 +105,7 @@ public class DisplayManager implements Listener {
 
     public void setMethod(Player player, Method method) {
         methods.put(player.getUniqueId(), method);
+        lastSent.remove(player.getUniqueId()); // 切换显示方式后第一次必须重发
         if (method != Method.BOSSBAR) {
             removeBossBar(player);
         }
@@ -136,6 +137,7 @@ public class DisplayManager implements Listener {
             Method method = methodOf(player);
             if (method == Method.OFF || !(player.getVehicle() instanceof Minecart)) {
                 removeBossBar(player);
+                lastSent.remove(player.getUniqueId()); // 重新上车时必须重发，避免内容相同被去重吞掉
                 continue;
             }
 
@@ -160,6 +162,7 @@ public class DisplayManager implements Listener {
                         bar = Bukkit.createBossBar("speed", BarColor.BLUE, BarStyle.SEGMENTED_10);
                         bar.addPlayer(player);
                         bossBars.put(player.getUniqueId(), bar);
+                        lastSent.remove(player.getUniqueId()); // 新建的条还停留在初始标题，必须立即写入
                     }
                     // 用自维护的 lastSent 去重（getTitle() 返回渲染后的文本，不可靠）
                     String title = plugin.getLanguageManager().format("display.format", "%speed%", formatted);

@@ -159,11 +159,14 @@ public class SpeedGUI implements InventoryHolder {
                 closeLater(player);
                 break;
             case SLOT_RESET:
-                if (plugin.getSpeedManager().getOverride(cart) != null) {
-                    plugin.getSpeedManager().setOverride(cart, null);
-                    plugin.getSpeedManager().apply(cart);
-                    refresh();
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.6f, 1.2f);
+                // 与调速物品一致：只响应左键/右键，防中键/数字键穿透
+                if (click.isLeftClick() || click.isRightClick()) {
+                    if (plugin.getSpeedManager().getOverride(cart) != null) {
+                        plugin.getSpeedManager().setOverride(cart, null);
+                        plugin.getSpeedManager().apply(cart);
+                        refresh();
+                        player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.6f, 1.2f);
+                    }
                 }
                 break;
             default:

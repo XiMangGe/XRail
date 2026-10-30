@@ -62,7 +62,9 @@ public class LanguageManager {
     public void load(String code) {
         File baseFile = new File(langDir, code + ".yml");
         if (!baseFile.isFile()) {
-            plugin.getLogger().warning("Language file lang/" + code + ".yml not found, falling back to en_us.");
+            if (!"en_us".equals(code)) {
+                plugin.getLogger().warning("Language file lang/" + code + ".yml not found, falling back to en_us.");
+            }
             baseFile = new File(langDir, "en_us.yml");
         }
         messages = baseFile.isFile() ? YamlConfiguration.loadConfiguration(baseFile) : new YamlConfiguration();

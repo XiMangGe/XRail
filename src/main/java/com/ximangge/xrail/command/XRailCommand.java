@@ -173,7 +173,7 @@ public class XRailCommand implements CommandExecutor, TabCompleter {
                 return;
             }
             Player player = (Player) sender;
-            if (!player.hasPermission("xrail.display")) {
+            if (!player.hasPermission("xrail.display") && !sender.hasPermission("xrail.admin")) {
                 lang.send(sender, "no-permission");
                 return;
             }
