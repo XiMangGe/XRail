@@ -8,7 +8,9 @@ import com.ximangge.xrail.listener.CartListener;
 import com.ximangge.xrail.listener.GuiListener;
 import com.ximangge.xrail.listener.InteractListener;
 import com.ximangge.xrail.speed.SpeedManager;
+import com.ximangge.xrail.gui.SpeedGUI;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -62,6 +64,12 @@ public final class XRail extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // 先关闭本插件的设置界面：热禁用时监听器即将失效，防止界面物品被取走
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getOpenInventory().getTopInventory().getHolder() instanceof SpeedGUI) {
+                player.closeInventory();
+            }
+        }
         Bukkit.getScheduler().cancelTasks(this);
         if (displayManager != null) {
             displayManager.cleanup();

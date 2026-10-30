@@ -13,7 +13,7 @@ import java.util.Locale;
  */
 public enum CartType {
 
-    MINECART("MINECART", "cart", "minecart", "普通矿车", "矿车", "普通"),
+    MINECART("MINECART", "cart", "minecart", "minecraft", "普通矿车", "矿车", "普通"),
     CHEST_MINECART("CHEST_MINECART", "chest", "chestcart", "箱子矿车", "箱子"),
     FURNACE_MINECART("FURNACE_MINECART", "furnace", "furnacecart", "powered", "动力矿车", "熔炉矿车", "熔炉"),
     HOPPER_MINECART("HOPPER_MINECART", "hopper", "hoppercart", "漏斗矿车", "漏斗"),

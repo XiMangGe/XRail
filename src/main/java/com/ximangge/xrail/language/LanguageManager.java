@@ -58,10 +58,11 @@ public class LanguageManager {
         return new File(langDir, code + ".yml").isFile();
     }
 
-    /** 加载指定语言（不存在时回退 en_us） */
+    /** 加载指定语言（不存在时回退 en_us 并告警） */
     public void load(String code) {
         File baseFile = new File(langDir, code + ".yml");
         if (!baseFile.isFile()) {
+            plugin.getLogger().warning("Language file lang/" + code + ".yml not found, falling back to en_us.");
             baseFile = new File(langDir, "en_us.yml");
         }
         messages = baseFile.isFile() ? YamlConfiguration.loadConfiguration(baseFile) : new YamlConfiguration();
@@ -121,7 +122,12 @@ public class LanguageManager {
 
     /** 发送 Action Bar 提示 */
     public void sendActionbar(Player player, String key, String... placeholders) {
-        Component component = LegacyComponentSerializer.legacySection().deserialize(format(key, placeholders));
+        sendActionbarRaw(player, format(key, placeholders));
+    }
+
+    /** 发送 Action Bar（已格式化文本，供需要去重的调用方使用） */
+    public void sendActionbarRaw(Player player, String text) {
+        Component component = LegacyComponentSerializer.legacySection().deserialize(text);
         player.sendActionBar(component);
     }
 

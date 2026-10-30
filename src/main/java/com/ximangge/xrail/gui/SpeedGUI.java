@@ -29,6 +29,7 @@ public class SpeedGUI implements InventoryHolder {
     public static final int SIZE = 54;
     private static final int SLOT_ITEM = 22;
     private static final int SLOT_INFO = 13;
+    private static final int SLOT_RESET = 40;
     private static final int SLOT_PREV = 45;
     private static final int SLOT_CLOSE = 49;
     private static final int SLOT_NEXT = 53;
@@ -126,6 +127,16 @@ public class SpeedGUI implements InventoryHolder {
                 plugin.getLanguageManager().format("gui.next"), null));
         inventory.setItem(SLOT_CLOSE, named(Material.BARRIER,
                 plugin.getLanguageManager().format("gui.close"), null));
+
+        // 重置按钮：有单车覆写时可恢复跟随类型默认
+        boolean hasOverride = plugin.getSpeedManager().getOverride(cart) != null;
+        inventory.setItem(SLOT_RESET, named(hasOverride ? Material.LIME_DYE : Material.GRAY_DYE,
+                plugin.getLanguageManager().format(hasOverride ? "gui.reset" : "gui.reset-none"), null));
+    }
+
+    /** 下一 tick 关闭界面（避免在点击事件中同步关闭导致 desync） */
+    private void closeLater(Player player) {
+        Bukkit.getScheduler().runTask(plugin, (Runnable) player::closeInventory);
     }
 
     /** 处理界面内的点击（调用方已取消事件） */
@@ -145,7 +156,15 @@ public class SpeedGUI implements InventoryHolder {
                 if (page < 1) setPage(page + 1);
                 break;
             case SLOT_CLOSE:
-                player.closeInventory();
+                closeLater(player);
+                break;
+            case SLOT_RESET:
+                if (plugin.getSpeedManager().getOverride(cart) != null) {
+                    plugin.getSpeedManager().setOverride(cart, null);
+                    plugin.getSpeedManager().apply(cart);
+                    refresh();
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.6f, 1.2f);
+                }
                 break;
             default:
                 break;
@@ -156,7 +175,7 @@ public class SpeedGUI implements InventoryHolder {
         if (!plugin.getConfigManager().getSetting(type).enabled) {
             // GUI 打开期间类型被切回原版：拒绝调整，保持状态一致
             plugin.getLanguageManager().send(player, "gui.type-vanilla");
-            player.closeInventory();
+            closeLater(player);
             return;
         }
         int oldLimit = currentLimit();

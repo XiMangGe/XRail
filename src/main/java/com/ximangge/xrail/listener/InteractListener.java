@@ -45,8 +45,12 @@ public class InteractListener implements Listener {
         this.plugin = plugin;
     }
 
-    /** 第一步：潜行 + 左键矿车 */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    /**
+     * 第一步：潜行 + 左键矿车。
+     * 用 HIGH + ignoreCancelled=false：即使保护插件（如 WorldGuard）已取消伤害事件，
+     * 组合键仍然生效（主城等保护区也能打开 GUI）；非组合键情况不干预事件。
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void onLeftClick(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) return;
         Player player = (Player) event.getDamager();

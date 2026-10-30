@@ -68,6 +68,8 @@ gui:
   prev: "&f上一页：红石粉（±1 格/秒）"
   next: "&f下一页：钻石（±5 格/秒）"
   close: "&c关闭"
+  reset: "&a重置为类型默认 &7(点击恢复跟随全局配置)"
+  reset-none: "&8无单车覆写 &7(当前跟随类型默认)"
   info-name: "&b%type% · 速度设置"
   info-limit: "&f当前上限：&b%speed% 格/秒"
   info-max: "&f最高上限：&7%max% 格/秒"

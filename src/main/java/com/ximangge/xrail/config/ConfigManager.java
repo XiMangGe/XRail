@@ -29,6 +29,9 @@ public class ConfigManager {
     private final File file;
     private YamlConfiguration yaml;
 
+    /** 上限的硬性上界，防止配置出离谱值破坏游戏物理 */
+    private static final int HARD_CAP = 500;
+
     private String language;
     private boolean displayEnabled;
     private String defaultMethod;
@@ -58,9 +61,9 @@ public class ConfigManager {
         maxCart = yaml.getInt("limit.max-cart", 75);
         maxOther = yaml.getInt("limit.max-other", 25);
         defaultLimit = yaml.getInt("limit.default", 25);
-        if (maxCart < 1) maxCart = 75;
-        if (maxOther < 1) maxOther = 25;
-        if (defaultLimit < 1) defaultLimit = 25;
+        maxCart = clampBound(maxCart, 75);
+        maxOther = clampBound(maxOther, 25);
+        defaultLimit = clampBound(defaultLimit, 25);
 
         carts.clear();
         for (CartType type : CartType.values()) {
@@ -84,6 +87,17 @@ public class ConfigManager {
         } catch (Exception ex) {
             plugin.getLogger().warning("Failed to save config.yml: " + ex.getMessage());
         }
+    }
+
+    /** 上限值钳制到 [1, HARD_CAP]，非法值回退默认并告警 */
+    private int clampBound(int v, int def) {
+        if (v < 1) return def;
+        if (v > HARD_CAP) {
+            plugin.getLogger().warning("Speed limit " + v + " exceeds hard cap " + HARD_CAP
+                    + " blocks/s, clamped. Please fix config.yml.");
+            return HARD_CAP;
+        }
+        return v;
     }
 
     /** 某类矿车的最高上限：普通矿车 max-cart，其他类型 max-other */

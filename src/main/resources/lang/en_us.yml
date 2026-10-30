@@ -68,6 +68,8 @@ gui:
   prev: "&fPrevious page: Redstone (+/-1 blocks/s)"
   next: "&fNext page: Diamonds (+/-5 blocks/s)"
   close: "&cClose"
+  reset: "&aReset to type default &7(click to follow the global config again)"
+  reset-none: "&8No cart override &7(currently following the type default)"
   info-name: "&b%type% · Speed Settings"
   info-limit: "&fCurrent limit: &b%speed% blocks/s"
   info-max: "&fMaximum limit: &7%max% blocks/s"

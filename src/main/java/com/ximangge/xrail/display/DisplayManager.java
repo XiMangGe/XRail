@@ -63,6 +63,7 @@ public class DisplayManager implements Listener {
     private final Map<UUID, Method> methods = new HashMap<>();
     private final Map<UUID, BossBar> bossBars = new HashMap<>();
     private final Map<UUID, Long> lastChat = new HashMap<>();
+    private final Map<UUID, String> lastSent = new HashMap<>();
     private BukkitTask task;
 
     public DisplayManager(XRail plugin) {
@@ -143,9 +144,15 @@ public class DisplayManager implements Listener {
             String formatted = String.format(Locale.US, "%.3f", speed);
 
             switch (method) {
-                case ACTIONBAR:
-                    plugin.getLanguageManager().sendActionbar(player, "display.format", "%speed%", formatted);
+                case ACTIONBAR: {
+                    // 内容不变不发包（静止矿车常见）
+                    String text = plugin.getLanguageManager().format("display.format", "%speed%", formatted);
+                    String prev = lastSent.put(player.getUniqueId(), text);
+                    if (!text.equals(prev)) {
+                        plugin.getLanguageManager().sendActionbarRaw(player, text);
+                    }
                     break;
+                }
 
                 case BOSSBAR: {
                     BossBar bar = bossBars.get(player.getUniqueId());
@@ -154,9 +161,10 @@ public class DisplayManager implements Listener {
                         bar.addPlayer(player);
                         bossBars.put(player.getUniqueId(), bar);
                     }
-                    // 值未变化时不重复发包
+                    // 用自维护的 lastSent 去重（getTitle() 返回渲染后的文本，不可靠）
                     String title = plugin.getLanguageManager().format("display.format", "%speed%", formatted);
-                    if (!bar.getTitle().equals(title)) {
+                    String prev = lastSent.put(player.getUniqueId(), title);
+                    if (!title.equals(prev)) {
                         bar.setTitle(title);
                     }
                     double progress = progressOf(speed, cart);
@@ -195,20 +203,23 @@ public class DisplayManager implements Listener {
         }
     }
 
-    /** 玩家退出：清理 BossBar 与聊天节流记录（显示方式本身持久化保留） */
+    /** 玩家退出：清理 BossBar、节流与去重记录（显示方式本身持久化保留） */
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+        UUID id = event.getPlayer().getUniqueId();
         removeBossBar(event.getPlayer());
-        lastChat.remove(event.getPlayer().getUniqueId());
+        lastChat.remove(id);
+        lastSent.remove(id);
     }
 
-    /** 插件关闭时清理：停任务、移除所有 Boss 条、保存数据 */
+    /** 插件关闭时清理：停任务、移除所有 Boss 条、清空缓存、保存数据 */
     public void cleanup() {
         stopTask();
         for (BossBar bar : bossBars.values()) {
             bar.removeAll();
         }
         bossBars.clear();
+        lastSent.clear();
         save();
     }
 }
