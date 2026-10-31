@@ -15,6 +15,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 单台矿车的速度设置界面（54 格箱子界面），所有玩家可用。
@@ -27,6 +31,10 @@ import java.util.List;
 public class SpeedGUI implements InventoryHolder {
 
     public static final int SIZE = 54;
+
+    /** 同一台矿车当前打开的所有界面（多人同开时互相联动刷新） */
+    private static final Map<UUID, List<SpeedGUI>> OPEN = new ConcurrentHashMap<>();
+
     private static final int SLOT_ITEM = 22;
     private static final int SLOT_INFO = 13;
     private static final int SLOT_RESET = 40;
@@ -46,6 +54,7 @@ public class SpeedGUI implements InventoryHolder {
         this.type = CartType.fromEntity(cart);
         String title = plugin.getLanguageManager().format("gui.title", "%type%", typeDisplay());
         this.inventory = Bukkit.createInventory(this, SIZE, title);
+        OPEN.computeIfAbsent(cart.getUniqueId(), k -> new CopyOnWriteArrayList<>()).add(this);
         refresh();
     }
 
@@ -74,6 +83,24 @@ public class SpeedGUI implements InventoryHolder {
     /** 这台矿车所属类型在配置中允许的最高速度 */
     private int cap() {
         return plugin.getConfigManager().getSetting(type).limit;
+    }
+
+    /** 关闭界面时从共享注册表移除（由 InventoryCloseEvent 调用） */
+    public void unregister() {
+        List<SpeedGUI> list = OPEN.get(cart.getUniqueId());
+        if (list != null) {
+            list.remove(this);
+            if (list.isEmpty()) OPEN.remove(cart.getUniqueId());
+        }
+    }
+
+    /** 同一台矿车的其他玩家界面同步刷新 */
+    private void refreshOthers() {
+        List<SpeedGUI> list = OPEN.get(cart.getUniqueId());
+        if (list == null) return;
+        for (SpeedGUI gui : list) {
+            if (gui != this) gui.refresh();
+        }
     }
 
     public void setPage(int page) {
@@ -165,6 +192,7 @@ public class SpeedGUI implements InventoryHolder {
                         plugin.getSpeedManager().setOverride(cart, null);
                         plugin.getSpeedManager().apply(cart);
                         refresh();
+                        refreshOthers();
                         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.6f, 1.2f);
                     }
                 }
@@ -197,6 +225,7 @@ public class SpeedGUI implements InventoryHolder {
         plugin.getSpeedManager().setOverride(cart, newLimit);
         plugin.getSpeedManager().apply(cart);
         refresh();
+        refreshOthers();
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.6f, 1.4f);
     }
 

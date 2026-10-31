@@ -114,10 +114,13 @@ public class DisplayManager implements Listener {
 
     public void startTask() {
         stopTask();
-        // 动作条在客户端约 3 秒后淡出，间隔过大（>2 秒）会断流闪烁，
-        // 因此刷新周期最多 40 tick（2 秒），配置写得再大也按 40 处理。
+        // 动作条在客户端约 3 秒后淡出，刷新周期超过 2 秒会断流闪烁；
+        // CHAT 模式的播报间隔也不能被任务周期拉长，
+        // 因此任务周期取两者较小值，且最高 40 tick（2 秒）。
         long interval = Math.max(1L, Math.min(plugin.getConfigManager().getUpdateInterval(), 40L));
-        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, interval, interval);
+        long chat = Math.max(1L, plugin.getConfigManager().getChatInterval());
+        long period = Math.min(interval, chat);
+        task = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, period, period);
     }
 
     public void restartTask() {
@@ -149,12 +152,10 @@ public class DisplayManager implements Listener {
 
             switch (method) {
                 case ACTIONBAR: {
-                    // 内容不变不发包（静止矿车常见）
+                    // 骑行期间每次刷新都发包：动作条在客户端约 3 秒淡出，
+                    // 若内容不变就停发，静止/匀速时显示会消失，看起来"不实时"
                     String text = plugin.getLanguageManager().format("display.format", "%speed%", formatted);
-                    String prev = lastSent.put(player.getUniqueId(), text);
-                    if (!text.equals(prev)) {
-                        plugin.getLanguageManager().sendActionbarRaw(player, text);
-                    }
+                    plugin.getLanguageManager().sendActionbarRaw(player, text);
                     break;
                 }
 

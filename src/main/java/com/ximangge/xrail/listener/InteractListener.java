@@ -90,8 +90,8 @@ public class InteractListener implements Listener {
         Armed arm = armed.get(player.getUniqueId());
         if (arm == null) return false;
         if (!arm.cartId.equals(clicked.getUniqueId())) return false; // 点错矿车：不消费，仍可右键目标车
+        if (!player.isSneaking() || !player.hasPermission("xrail.use")) return false; // 未保持潜行：不消费，玩家可正常坐车
         armed.remove(player.getUniqueId());
-        if (!player.isSneaking() || !player.hasPermission("xrail.use")) return false;
         if (System.currentTimeMillis() - arm.time > ARM_TIMEOUT_MS) {
             plugin.getLanguageManager().sendActionbar(player, "gui.expired");
             return false;

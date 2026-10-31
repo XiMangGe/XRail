@@ -108,7 +108,7 @@ carts:
 display:
   enabled: true              # 是否允许使用速度显示栏
   default-method: ACTIONBAR  # 默认显示方式: ACTIONBAR / BOSSBAR / CHAT / OFF
-  update-interval: 2         # 显示刷新间隔（tick，20 tick = 1 秒）
+  update-interval: 1         # 显示刷新间隔（tick，1 = 每 tick 刷新最实时，最高 40）
   chat-interval: 20          # CHAT 模式的发送间隔（tick）
 ```
 

@@ -11,8 +11,8 @@ display:
   enabled: true
   # 默认显示方式: ACTIONBAR / BOSSBAR / CHAT / OFF
   default-method: ACTIONBAR
-  # 显示刷新间隔（tick，20 tick = 1 秒；配置超过 40 时按 40 处理，防止动作条断流）
-  update-interval: 2
+  # 显示刷新间隔（tick，1 = 每 tick 刷新最实时；最高 40，配置更大时按 40 处理）
+  update-interval: 1
   # CHAT 模式的发送间隔（tick）
   chat-interval: 20
 
