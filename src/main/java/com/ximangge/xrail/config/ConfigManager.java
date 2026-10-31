@@ -29,17 +29,15 @@ public class ConfigManager {
     private final File file;
     private YamlConfiguration yaml;
 
-    /** 上限的硬性上界，防止配置出离谱值破坏游戏物理 */
-    private static final int HARD_CAP = 500;
+    /** 上限的硬性上界，防止配置出离谱值破坏游戏物理（速度单位：格/秒） */
+    public static final int HARD_CAP = 500;
 
     private String language;
     private boolean displayEnabled;
     private String defaultMethod;
     private int updateInterval;
     private int chatInterval;
-    private int maxCart;      // 普通矿车最高上限
-    private int maxOther;     // 其他类型矿车最高上限
-    private int defaultLimit;
+    private int defaultLimit; // 兼容旧配置 limit.default 的兜底值，新配置不再使用
     private final Map<CartType, CartSetting> carts = new EnumMap<>(CartType.class);
 
     public ConfigManager(XRail plugin) {
@@ -58,12 +56,7 @@ public class ConfigManager {
         defaultMethod = yaml.getString("display.default-method", "ACTIONBAR").toUpperCase(Locale.ROOT);
         updateInterval = Math.max(1, yaml.getInt("display.update-interval", 2));
         chatInterval = Math.max(1, yaml.getInt("display.chat-interval", 20));
-        maxCart = yaml.getInt("limit.max-cart", 75);
-        maxOther = yaml.getInt("limit.max-other", 25);
-        defaultLimit = yaml.getInt("limit.default", 25);
-        maxCart = clampBound(maxCart, 75);
-        maxOther = clampBound(maxOther, 25);
-        defaultLimit = clampBound(defaultLimit, 25);
+        defaultLimit = clampBound(yaml.getInt("limit.default", 25), 25);
 
         carts.clear();
         for (CartType type : CartType.values()) {
@@ -71,7 +64,7 @@ public class ConfigManager {
             String path = "carts." + type.getKey();
             boolean enabled = yaml.getBoolean(path + ".enabled", true);
             int limit = yaml.getInt(path + ".limit", defaultLimit);
-            carts.put(type, new CartSetting(enabled, clamp(type, limit)));
+            carts.put(type, new CartSetting(enabled, clamp(limit)));
         }
     }
 
@@ -109,14 +102,9 @@ public class ConfigManager {
         return v;
     }
 
-    /** 某类矿车的最高上限：普通矿车 max-cart，其他类型 max-other */
-    public int getTypeCap(CartType type) {
-        return type == CartType.MINECART ? maxCart : maxOther;
-    }
-
-    /** 速度钳制到 [1, 该类型上限] */
-    public int clamp(CartType type, int v) {
-        return Math.max(1, Math.min(v, getTypeCap(type)));
+    /** 速度钳制到 [1, HARD_CAP] */
+    public int clamp(int v) {
+        return Math.max(1, Math.min(v, HARD_CAP));
     }
 
     public CartSetting getSetting(CartType type) {
@@ -130,7 +118,7 @@ public class ConfigManager {
         if (type.isCommandCart()) return;
         CartSetting s = getSetting(type);
         s.enabled = true;
-        s.limit = clamp(type, limit);
+        s.limit = clamp(limit);
         carts.put(type, s);
         save();
     }
@@ -168,17 +156,5 @@ public class ConfigManager {
 
     public int getChatInterval() {
         return chatInterval;
-    }
-
-    public int getMaxCart() {
-        return maxCart;
-    }
-
-    public int getMaxOther() {
-        return maxOther;
-    }
-
-    public int getDefaultLimit() {
-        return defaultLimit;
     }
 }

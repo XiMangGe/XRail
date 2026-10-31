@@ -15,8 +15,8 @@ import org.bukkit.persistence.PersistentDataType;
  * Bukkit 的 setMaxSpeed 单位是“格/tick”（原版 0.4 = 8 格/秒），
  * 本插件对外的单位统一为“格/秒”，写入时除以 20。
  *
- * 上限规则：普通矿车（MINECART）最高 limit.max-cart（默认 75），
- * 其他类型最高 limit.max-other（默认 25），命令方块矿车始终原版。
+ * 上限规则：每类矿车的最高速度由 config.yml 的 carts.<类型>.limit 决定，
+ * GUI 对单台矿车的调整也不能超过该值；命令方块矿车始终原版。
  * 玩家可通过 GUI 对单台矿车设置自定义上限（存入矿车持久化数据，随存档保存）。
  */
 public class SpeedManager {
@@ -51,16 +51,16 @@ public class SpeedManager {
         }
     }
 
-    /** 单台矿车最终生效的速度上限（格/秒） */
+    /** 单台矿车最终生效的速度上限（格/秒），单车覆写不会超过类型配置值 */
     public int effectiveLimit(Minecart cart) {
         CartType type = CartType.fromEntity(cart);
         if (type == null || type.isCommandCart()) return VANILLA_BLOCKS_PER_SECOND;
         ConfigManager.CartSetting setting = plugin.getConfigManager().getSetting(type);
         if (!setting.enabled) return VANILLA_BLOCKS_PER_SECOND;
         Integer override = getOverride(cart);
-        return override != null
-                ? plugin.getConfigManager().clamp(type, override)
-                : setting.limit;
+        if (override == null) return setting.limit;
+        // 管理员调低类型 limit 后，旧的单车覆写自动收敛到新上限
+        return Math.max(1, Math.min(override, setting.limit));
     }
 
     /** 按配置对单台矿车应用速度上限（命令方块矿车不处理） */

@@ -18,7 +18,7 @@ help:
   - "&f/xrail reload &7- Reload and re-apply config &8(admin)"
   - "&f/xrailreload &7- Shortcut for reload &8(admin)"
   - "&7Tip: Sneak + Left-click + Right-click a minecart to open the speed GUI"
-  - "&7Caps: minecart 75 blocks/s max, other types 25 blocks/s max"
+  - "&7Caps: per-type limits are set in the server config; GUI adjusts single carts within the limit"
 usage-set: "&cUsage: /xrail set <cart type> <speed>, e.g. &f/xrail set hopper_minecart 40"
 usage-vanilla: "&cUsage: /xrail vanilla <cart type>"
 usage-language: "&cUsage: /xrail language <code>, e.g. &fzh_cn / en_us"

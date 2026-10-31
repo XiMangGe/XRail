@@ -67,9 +67,7 @@ public final class XRail extends JavaPlugin {
         speedManager.startSweepTask();
         displayManager.startTask();
 
-        getLogger().info("XRail enabled. language=" + configManager.getLanguage()
-                + ", caps: minecart=" + configManager.getMaxCart()
-                + ", other=" + configManager.getMaxOther() + " blocks/s");
+        getLogger().info("XRail enabled. language=" + configManager.getLanguage());
     }
 
     @Override

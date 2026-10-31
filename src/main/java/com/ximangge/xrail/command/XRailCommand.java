@@ -109,7 +109,7 @@ public class XRailCommand implements CommandExecutor, TabCompleter {
             lang.send(sender, "invalid-type", "%type%", args[1]);
             return;
         }
-        int cap = plugin.getConfigManager().getTypeCap(type);
+        int cap = ConfigManager.HARD_CAP;
         int num;
         try {
             num = Integer.parseInt(args[2]);
@@ -117,7 +117,7 @@ public class XRailCommand implements CommandExecutor, TabCompleter {
             lang.send(sender, "invalid-number", "%input%", args[2], "%max%", String.valueOf(cap));
             return;
         }
-        int clamped = plugin.getConfigManager().clamp(type, num);
+        int clamped = plugin.getConfigManager().clamp(num);
         if (clamped != num) {
             lang.send(sender, "speed-clamped", "%value%", String.valueOf(clamped));
         }

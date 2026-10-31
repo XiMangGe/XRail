@@ -22,7 +22,7 @@ import java.util.List;
  * - 第 2 页：红石粉，每个 ±1 格/秒（数量 = 当前上限 ÷ 5 的余数）
  * - 右键加、左键减；箭头翻页，屏障关闭
  * 修改只作用于这一台矿车（存入其持久化数据，随存档保存），
- * 且不能超过该类型的最高上限：普通矿车 75，其他类型 25。
+ * 且不能超过该类型在 config.yml carts 中配置的速度上限。
  */
 public class SpeedGUI implements InventoryHolder {
 
@@ -71,9 +71,9 @@ public class SpeedGUI implements InventoryHolder {
         return plugin.getSpeedManager().effectiveLimit(cart);
     }
 
-    /** 这台矿车所属类型允许的最高上限 */
+    /** 这台矿车所属类型在配置中允许的最高速度 */
     private int cap() {
-        return plugin.getConfigManager().getTypeCap(type);
+        return plugin.getConfigManager().getSetting(type).limit;
     }
 
     public void setPage(int page) {

@@ -5,15 +5,6 @@
 # 插件语言（对应 lang 文件夹中的文件名，例如 zh_cn / en_us）
 language: zh_cn
 
-# GUI 调整天花板（单位：格/秒）
-# 注意：这里只是"玩家用 GUI 调单台矿车时的最高值"，不是默认速度！
-#       各类矿车的默认速度在下方 carts 里设置，两者不是一回事
-limit:
-  # 普通矿车（MINECART）的天花板，GUI 与命令都无法超过该值
-  max-cart: 75
-  # 其他类型矿车的天花板
-  max-other: 25
-
 # 速度显示栏（乘坐矿车时实时显示速度，保留 3 位小数）
 display:
   # 是否允许使用速度显示栏（false 时所有玩家都无法开启）
@@ -25,13 +16,14 @@ display:
   # CHAT 模式的发送间隔（tick）
   chat-interval: 20
 
-# 各类矿车的默认速度（对全服该类矿车生效，单位：格/秒）
-# enabled = true  时限制该类矿车速度（1 ~ 对应天花板：普通矿车 75，其他 25）
+# 各类矿车的速度上限（对全服该类矿车生效，单位：格/秒）
+# limit 就是该类型的最高速度：全局生效，玩家用 GUI 调整单台矿车也不能超过
+# enabled = true  时限制该类矿车速度（1 ~ limit）
 # enabled = false 时该类型矿车保持原版行为
-# 玩家可用 GUI 把单台矿车调到天花板以内的任意值（存入矿车数据，随存档保存）
+# 玩家可用 GUI 把单台矿车调整到 limit 以内的任意值（存入矿车数据，随存档保存）
 # 注意：命令方块矿车（COMMAND_MINECART）始终为原版，不受本插件影响
 carts:
-  MINECART:          # 普通矿车（唯一能通过 GUI 调到 75 的类型）
+  MINECART:          # 普通矿车
     enabled: true
     limit: 25
   CHEST_MINECART:    # 箱子矿车
