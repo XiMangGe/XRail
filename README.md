@@ -85,14 +85,16 @@
 
 配置文件路径：`plugins/XRail/config.yml`
 
-### 速度上限
+### GUI 调整天花板
 
 ```yaml
 limit:
-  max-cart: 75     # 普通矿车（MINECART）的最高上限
-  max-other: 25    # 其他类型矿车的最高上限
-  default: 25      # 未单独配置过的矿车类型的默认上限
+  max-cart: 75     # 普通矿车（MINECART）的天花板：玩家用 GUI 调单台矿车的最高值
+  max-other: 25    # 其他类型矿车的天花板
 ```
+
+> 注意：这只是"天花板"，不是默认速度——各类矿车的默认速度在下方 `carts` 里设置。
+> 例如 `carts.MINECART.limit: 25` 时全服普通矿车默认 25 格/秒，玩家可以把某一台车调到最高 75。
 
 ### 速度显示栏
 
@@ -104,22 +106,23 @@ display:
   chat-interval: 20          # CHAT 模式的发送间隔（tick）
 ```
 
-### 各类矿车
+### 各类矿车默认速度
 
 ```yaml
 carts:
-  MINECART:
+  MINECART:          # 普通矿车（唯一能通过 GUI 调到 75 的类型）
     enabled: true   # false = 该类型保持原版
-    limit: 25       # 速度上限（格/秒）
-  HOPPER_MINECART:
+    limit: 25       # 该类矿车的默认速度（格/秒），对全服生效
+  CHEST_MINECART:    # 箱子矿车
     enabled: true
     limit: 25
-  # 其余类型同理：CHEST_MINECART / FURNACE_MINECART / TNT_MINECART / SPAWNER_MINECART
+  # FURNACE_MINECART 动力矿车 / HOPPER_MINECART 漏斗矿车
+  # TNT_MINECART TNT 矿车 / SPAWNER_MINECART 刷怪笼矿车（结构同上）
 ```
 
 > 命令方块矿车（COMMAND_MINECART）始终为原版，不受本插件影响。
 >
-> 玩家通过 GUI 对单台矿车设置的自定义上限不超过对应类型上限，随矿车存档保存。
+> 玩家通过 GUI 对单台矿车设置的自定义上限不超过对应天花板（普通矿车 75，其他 25），随矿车存档保存。
 
 ---
 
