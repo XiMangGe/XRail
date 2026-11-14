@@ -10,7 +10,7 @@
 set -e
 
 PLUGIN_NAME=XRail
-VERSION=26.11.14.1
+VERSION=26.11.14.2
 
 # ---- compute version ----
 if [ -n "${XRAIL_VERSION:-}" ]; then

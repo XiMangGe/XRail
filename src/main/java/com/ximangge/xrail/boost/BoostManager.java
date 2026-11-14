@@ -3,6 +3,7 @@ package com.ximangge.xrail.boost;
 import com.ximangge.xrail.XRail;
 import com.ximangge.xrail.config.CartType;
 import com.ximangge.xrail.config.ConfigManager;
+import org.bukkit.block.data.Rail;
 import org.bukkit.entity.Minecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +13,7 @@ import org.bukkit.util.Vector;
 
 /**
  * 助推：有乘客的矿车沿行进方向自动加速到该矿车的上限（像无限充能铁轨），
- * 并把下坡等场景中重力造成的超速硬性压回上限。
+ * 并把重力造成的超速硬性压回目标速度；坡道（上/下坡铁轨）一律限速原版 8 格/秒。
  *
  * 背景：Bukkit 的 setMaxSpeed 只约束沿轨道的水平速度，
  * 下坡时重力加速度不受上限约束；且原版移动是"每 tick 一步"，
@@ -27,6 +28,9 @@ public class BoostManager implements Listener {
     /** 低于该速度（格/tick）视为静止，不自动起步（推一下或充能铁轨启动） */
     private static final double MIN_MOVE_SPEED = 1.0E-4D;
 
+    /** 原版矿车最大速度：0.4 格/tick = 8 格/秒（坡道统一压回该速度） */
+    private static final double VANILLA_BLOCKS_PER_TICK = 0.4D;
+
     private final XRail plugin;
 
     public BoostManager(XRail plugin) {
@@ -37,7 +41,7 @@ public class BoostManager implements Listener {
     public void onMove(VehicleMoveEvent event) {
         if (!(event.getVehicle() instanceof Minecart)) return;
         Minecart cart = (Minecart) event.getVehicle();
-        if (cart.isEmpty() || !onRails(cart)) return; // 只助推轨道上有乘客的矿车
+        if (cart.isEmpty() || railAt(cart) == null) return; // 只助推轨道上有乘客的矿车
 
         CartType type = CartType.fromEntity(cart);
         if (type == null || type.isCommandCart()) return;
@@ -50,19 +54,28 @@ public class BoostManager implements Listener {
         if (speed < MIN_MOVE_SPEED) return;
 
         double cap = plugin.getSpeedManager().effectiveLimit(cart) / 20.0D;
-        if (speed > cap) {
-            // 重力分量不受 setMaxSpeed 管（下坡俯冲），硬性压回上限
-            cart.setVelocity(velocity.normalize().multiply(cap));
+        // 坡道（上/下坡铁轨）一律把速度压回原版 8 格/秒：
+        // 下坡"飞下去"、高速冲坡都会被限制住，平地才按配置上限跑
+        double target = onSlope(cart) ? Math.min(cap, VANILLA_BLOCKS_PER_TICK) : cap;
+        if (speed > target) {
+            // 重力分量不受 setMaxSpeed 管（下坡俯冲），硬性压回目标速度
+            cart.setVelocity(velocity.normalize().multiply(target));
         } else {
             // 沿当前方向助推：每 tick 增加 acceleration 格/秒²（1 格/秒² = 1/400 格/tick²）
             double step = config.getAssistAcceleration() / 400.0D;
-            double newSpeed = Math.min(cap, speed + step);
+            double newSpeed = Math.min(target, speed + step);
             cart.setVelocity(velocity.normalize().multiply(newSpeed));
         }
     }
 
-    /** 矿车当前所在方块是否为铁轨（paper-api 1.20.4 没有 isOnRails，用方块类型判断） */
-    private boolean onRails(Minecart cart) {
-        return cart.getLocation().getBlock().getType().name().endsWith("RAIL");
+    /** 矿车当前所在方块的铁轨数据，不在铁轨上返回 null（paper-api 1.20.4 没有 isOnRails） */
+    private Rail railAt(Minecart cart) {
+        return cart.getLocation().getBlock().getBlockData() instanceof Rail rail ? rail : null;
+    }
+
+    /** 矿车所在铁轨是否为坡道（上/下坡，ASCENDING_* 形状） */
+    private boolean onSlope(Minecart cart) {
+        Rail rail = railAt(cart);
+        return rail != null && rail.getShape().name().startsWith("ASCENDING");
     }
 }
