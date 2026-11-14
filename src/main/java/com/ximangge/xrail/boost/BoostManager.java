@@ -13,7 +13,8 @@ import org.bukkit.util.Vector;
 
 /**
  * 助推：有乘客的矿车沿行进方向自动加速到该矿车的上限（像无限充能铁轨），
- * 并把重力造成的超速硬性压回目标速度；坡道（上/下坡铁轨）一律限速原版 8 格/秒。
+ * 并把重力造成的超速硬性压回目标速度；坡道（上/下坡铁轨）一律限速原版 8 格/秒，
+ * 且在进坡前提前减速（高速矿车进坡瞬间会脱轨/飞出，事后补救来不及）。
  *
  * 背景：Bukkit 的 setMaxSpeed 只约束沿轨道的水平速度，
  * 下坡时重力加速度不受上限约束；且原版移动是"每 tick 一步"，
@@ -54,9 +55,11 @@ public class BoostManager implements Listener {
         if (speed < MIN_MOVE_SPEED) return;
 
         double cap = plugin.getSpeedManager().effectiveLimit(cart) / 20.0D;
-        // 坡道（上/下坡铁轨）一律把速度压回原版 8 格/秒：
-        // 下坡"飞下去"、高速冲坡都会被限制住，平地才按配置上限跑
-        double target = onSlope(cart) ? Math.min(cap, VANILLA_BLOCKS_PER_TICK) : cap;
+        // 坡道（上/下坡铁轨）一律把速度压回原版 8 格/秒：下坡"飞下去"、高速冲坡都会被限制住。
+        // 必须"提前减速"：高速矿车在进坡的那一 tick 就会脱轨/飞出，
+        // 事后再压速来不及，所以沿行进方向向前扫描，发现前方有坡道就先把速度压下来。
+        boolean slope = onSlope(cart) || slopeAhead(cart, velocity);
+        double target = slope ? Math.min(cap, VANILLA_BLOCKS_PER_TICK) : cap;
         if (speed > target) {
             // 重力分量不受 setMaxSpeed 管（下坡俯冲），硬性压回目标速度
             cart.setVelocity(velocity.normalize().multiply(target));
@@ -76,6 +79,30 @@ public class BoostManager implements Listener {
     /** 矿车所在铁轨是否为坡道（上/下坡，ASCENDING_* 形状） */
     private boolean onSlope(Minecart cart) {
         Rail rail = railAt(cart);
-        return rail != null && rail.getShape().name().startsWith("ASCENDING");
+        return rail != null && isAscending(rail);
+    }
+
+    /**
+     * 行进方向前方是否快到坡道了。
+     * 扫描距离 = 本 tick 位移距离 + 1 格，保证高速（每 tick 跨多格）也不会一头扎进坡道。
+     */
+    private boolean slopeAhead(Minecart cart, Vector velocity) {
+        Vector dir = new Vector(velocity.getX(), 0, velocity.getZ());
+        double len = dir.length();
+        if (len < 1.0E-6D) return false;
+        dir.multiply(1.0D / len);
+        int look = (int) Math.ceil(velocity.length()) + 1;
+        org.bukkit.Location base = cart.getLocation();
+        for (int i = 1; i <= look; i++) {
+            org.bukkit.block.Block block = base.clone().add(dir.clone().multiply(i)).getBlock();
+            if (block.getBlockData() instanceof Rail rail && isAscending(rail)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAscending(Rail rail) {
+        return rail.getShape().name().startsWith("ASCENDING");
     }
 }
