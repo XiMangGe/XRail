@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.HashMap;
@@ -147,7 +148,10 @@ public class DisplayManager implements Listener {
             }
 
             Minecart cart = (Minecart) player.getVehicle();
-            double speed = cart.getVelocity().length() * 20.0D;
+            // 只算水平速度（XZ）：下坡时垂直重力分量不受 setMaxSpeed 管，
+            // 若算入 Y 会在下坡时显示远超上限的"速度"，与限速直觉不符
+            Vector v = cart.getVelocity();
+            double speed = Math.hypot(v.getX(), v.getZ()) * 20.0D;
             String formatted = String.format(Locale.US, "%.3f", speed);
 
             switch (method) {

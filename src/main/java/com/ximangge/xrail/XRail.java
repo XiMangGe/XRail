@@ -1,5 +1,6 @@
 package com.ximangge.xrail;
 
+import com.ximangge.xrail.boost.BoostManager;
 import com.ximangge.xrail.command.XRailCommand;
 import com.ximangge.xrail.config.ConfigManager;
 import com.ximangge.xrail.display.DisplayManager;
@@ -21,7 +22,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 2. 潜行 + 左键 + 右键矿车打开箱子界面设置速度（钻石 ±5 / 红石粉 ±1，双页切换）
  * 3. /xrail 命令：全局设置、原版切换、语言切换、重载
  * 4. 实时速度显示栏（动作条 / Boss 条 / 聊天栏，3 位小数）
- * 5. 首次运行生成 config.yml 与 lang/ 语言文件夹
+ * 5. 助推（可选）：有乘客的矿车自动加速到上限，能爬缓坡，下坡也严格限速
+ * 6. 首次运行生成 config.yml 与 lang/ 语言文件夹
  */
 public final class XRail extends JavaPlugin {
 
@@ -29,6 +31,7 @@ public final class XRail extends JavaPlugin {
     private LanguageManager languageManager;
     private SpeedManager speedManager;
     private DisplayManager displayManager;
+    private BoostManager boostManager;
 
     @Override
     public void onEnable() {
@@ -48,6 +51,8 @@ public final class XRail extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new InteractListener(this), this);
         Bukkit.getPluginManager().registerEvents(new GuiListener(this), this);
         Bukkit.getPluginManager().registerEvents(displayManager, this);
+        boostManager = new BoostManager(this);
+        Bukkit.getPluginManager().registerEvents(boostManager, this);
 
         XRailCommand command = new XRailCommand(this);
         getCommand("xrail").setExecutor(command);
@@ -113,5 +118,9 @@ public final class XRail extends JavaPlugin {
 
     public DisplayManager getDisplayManager() {
         return displayManager;
+    }
+
+    public BoostManager getBoostManager() {
+        return boostManager;
     }
 }

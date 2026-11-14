@@ -37,6 +37,8 @@ public class ConfigManager {
     private String defaultMethod;
     private int updateInterval;
     private int chatInterval;
+    private boolean assistEnabled;
+    private int assistAcceleration;
     private int defaultLimit; // 兼容旧配置 limit.default 的兜底值，新配置不再使用
     private final Map<CartType, CartSetting> carts = new EnumMap<>(CartType.class);
 
@@ -56,6 +58,8 @@ public class ConfigManager {
         defaultMethod = yaml.getString("display.default-method", "ACTIONBAR").toUpperCase(Locale.ROOT);
         updateInterval = Math.max(1, yaml.getInt("display.update-interval", 2));
         chatInterval = Math.max(1, yaml.getInt("display.chat-interval", 20));
+        assistEnabled = yaml.getBoolean("assist.enabled", true);
+        assistAcceleration = Math.max(1, yaml.getInt("assist.acceleration", 30));
         defaultLimit = clampBound(yaml.getInt("limit.default", 25), 25);
 
         carts.clear();
@@ -156,5 +160,15 @@ public class ConfigManager {
 
     public int getChatInterval() {
         return chatInterval;
+    }
+
+    /** 是否开启助推（有乘客的矿车自动加速到上限，并硬性压回下坡超速） */
+    public boolean isAssistEnabled() {
+        return assistEnabled;
+    }
+
+    /** 助推加速度，单位 格/秒²（爬 45° 坡需要大于约 11） */
+    public int getAssistAcceleration() {
+        return assistAcceleration;
     }
 }
